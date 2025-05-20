@@ -13,6 +13,13 @@ export const postSecret = async ({loginValues, content}) => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
     console.log(loginValues)
 
+    const body = {
+        email: loginValues.email,
+        encryptPassword: loginValues.password,
+        content: content
+    };
+    console.log('body', body)
+
     try {
         const response = await fetch(`${API_URL}/secrets`, {
             method: 'POST',
@@ -22,7 +29,7 @@ export const postSecret = async ({loginValues, content}) => {
             body: JSON.stringify({
                 email: loginValues.email,
                 encryptPassword: loginValues.password,
-                content: content
+                content: JSON.stringify(content)
             })
         });
 
