@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {postUser} from "../../comunication/FetchUser";
+import ReCAPTCHA from 'react-google-recaptcha';
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '';
 
 /**
  * RegisterUser
@@ -8,7 +12,6 @@ import {postUser} from "../../comunication/FetchUser";
  */
 function RegisterUser({loginValues, setLoginValues}) {
     const navigate = useNavigate();
-
     const initialState = {
         firstName: "",
         lastName: "",
@@ -17,7 +20,9 @@ function RegisterUser({loginValues, setLoginValues}) {
         passwordConfirmation: "",
         errorMessage: ""
     };
+
     const [credentials, setCredentials] = useState(initialState);
+    const [recaptchaToken, setRecaptchaToken] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (e) => {
@@ -31,8 +36,18 @@ function RegisterUser({loginValues, setLoginValues}) {
             return;
         }
 
+        if (!recaptchaToken) {
+            setErrorMessage('Please verify the captcha.');
+            return;
+        }
+
+        if (!passwordRegex.test(credentials.password)) {
+            setErrorMessage('Password too weak.');
+            return;
+        }
+
         try {
-            await postUser(credentials);
+            await postUser({ ...credentials, captchaToken: recaptchaToken });
             setLoginValues({userName: credentials.email, password: credentials.password});
             setCredentials(initialState);
             navigate('/');
@@ -107,6 +122,12 @@ function RegisterUser({loginValues, setLoginValues}) {
                         </div>
                     </aside>
                 </section>
+
+                <ReCAPTCHA
+                    sitekey="6LenF1QrAAAAAIe8FrD6CmDntrs-MDc1yDKViVr6"
+                    onChange={token => setRecaptchaToken(token || '')}
+                />
+
                 <button type="submit">Register</button>
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             </form>

@@ -1,8 +1,3 @@
-/**
- * Fetch methodes for secret api calls
- * @author Peter Rutschmann
- */
-
 //Post secret to server
 export const postSecret = async ({loginValues, content}) => {
     const protocol = process.env.REACT_APP_API_PROTOCOL; // "http"
