@@ -49,13 +49,16 @@ export const postUser = async (content) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                firstName: `${content.firstName}`,
-                lastName: `${content.lastName}`,
-                email: `${content.email}`,
-                password: `${content.password}`,
-                passwordConfirmation: `${content.passwordConfirmation}`
+                firstName: content.firstName,
+                lastName: content.lastName,
+                email: content.email,
+                password: content.password,
+                passwordConfirmation: content.passwordConfirmation,
+                recaptchaToken: content.recaptchaToken
             })
         });
+
+        console.log('captchaToken:', content.recaptchaToken);
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -66,6 +69,6 @@ export const postUser = async (content) => {
         return data;
     } catch (error) {
         console.error('Failed to post user:', error.message);
-        throw new Error('Failed to save user. ' || error.message);
+        throw new Error('Failed to save user. ' + error.message);
     }
 };
